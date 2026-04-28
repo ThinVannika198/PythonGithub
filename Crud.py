@@ -2,7 +2,7 @@ stuffs = []
 prices = []
 
 while True:
-    print("\n========== Menu ==========")
+    print("\n" + "="*10 + " Menu " + "="*10)
     print("1. Input")
     print("2. Output")
     print("3. Search")
@@ -11,19 +11,24 @@ while True:
     print("6. Add Data")
     print("7. Check the bill")
     print("0. Exit")
-    print("==========================")
+    print("="*26)
 
     op = input("Choose your option: ")
+
     match op:
-        case '1':
+        case '1' | '6': # Combined Input and Add Data as they do the same thing
+            header = "Input" if op == '1' else "Add Data"
+            print(f"========== {header} ==========")
             while True:
-                print("========== Input ==========")
                 stuff = input("Enter your stuff (or 'q' to quit): ")
                 if stuff.lower() == 'q':
                     break
-                price = float(input(f"Enter price for '{stuff}': "))
-                stuffs.append(stuff)
-                prices.append(price)
+                try:
+                    price = float(input(f"Enter price for '{stuff}': "))
+                    stuffs.append(stuff)
+                    prices.append(price)
+                except ValueError:
+                    print("Invalid price! Please enter a number.")
 
         case '2':
             print("========== Output ==========")
@@ -35,23 +40,26 @@ while True:
 
         case '3':
             print("========== Search ==========")
-            stuff = input("Enter item to search: ")
-            if stuff in stuffs:
-                idx = stuffs.index(stuff)
-                print(f"'{stuff}' found at position {idx + 1}, price: ${prices[idx]:.2f}")
+            search_item = input("Enter item to search: ")
+            if search_item in stuffs:
+                idx = stuffs.index(search_item)
+                print(f"'{search_item}' found at position {idx + 1}, price: ${prices[idx]:.2f}")
             else:
                 print("Item not found.")
 
         case '4':
             print("========== Update ==========")
-            old = input("Enter item to update: ")
+            old = input("Enter item name to update: ")
             if old in stuffs:
-                index = stuffs.index(old)
-                new = input("Enter new item name: ")
-                new_price = float(input("Enter new price: "))
-                stuffs[index] = new
-                prices[index] = new_price
-                print("Updated successfully.")
+                idx = stuffs.index(old)
+                new_name = input("Enter new item name: ")
+                try:
+                    new_price = float(input("Enter new price: "))
+                    stuffs[idx] = new_name
+                    prices[idx] = new_price
+                    print("Updated successfully.")
+                except ValueError:
+                    print("Update failed: Invalid price.")
             else:
                 print("Item not found.")
 
@@ -59,33 +67,23 @@ while True:
             print("========== Delete ==========")
             old = input("Enter item to delete: ")
             if old in stuffs:
-                index = stuffs.index(old)
-                stuffs.pop(index)
-                prices.pop(index)
+                idx = stuffs.index(old)
+                stuffs.pop(idx)
+                prices.pop(idx)
                 print("Deleted successfully.")
             else:
                 print("Item not found.")
-
-        case '6':
-            print("========== Add Data ==========")
-            while True:
-                add_item = input("Enter item to add (or 'q' to quit): ")
-                if add_item.lower() == 'q':
-                    break
-                price = float(input(f"Enter price for '{add_item}': "))
-                stuffs.append(add_item)
-                prices.append(price)
 
         case '7':
             print("********* Check the bill **********")
             if not stuffs:
                 print("No items to bill.")
             else:
-                total = 0
-                for stuff, price in zip(stuffs, prices):
-                    print(f"{stuff}: ${price:.2f}")
-                    total += price
-                print(f"Total = ${total:.2f}")
+                total = sum(prices)
+                for s, p in zip(stuffs, prices):
+                    print(f"{s:15} : ${p:8.2f}")
+                print("-" * 30)
+                print(f"{'Total':15} : ${total:8.2f}")
 
         case '0':
             print("Exiting... Thank you!")
